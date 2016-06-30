@@ -1,0 +1,25 @@
+---
+- !permit
+  privilege: read
+  resource: !variable
+    id: foobar
+  role: !member
+    role: !group
+      id: ops
+- !permit
+  privilege:
+  - read
+  - execute
+  replace: true
+  resource:
+  - !variable
+    id: foobar
+  - !group
+    id: users
+  role:
+  - !member
+    role: !group
+      id: developers
+  - !member
+    role: !group
+      id: support

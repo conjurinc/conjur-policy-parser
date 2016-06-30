@@ -1,0 +1,49 @@
+existing: |
+  - !permit
+    role:
+    - !group developers
+    resource:
+    - !variable username
+    privilege: read
+  
+requested: |
+  - !permit
+    role:
+    - !group developers
+    - !group everyone
+    resource:
+    - !variable password
+    - !variable username
+    privilege: [ read, execute ]
+
+apply:
+  - role: group:developers
+    privilege: execute
+    resource: variable:password
+    admin: false
+  - role: group:developers
+    privilege: execute
+    resource: variable:username
+    admin: false
+  - role: group:developers
+    privilege: read
+    resource: variable:password
+    admin: false
+  - role: group:everyone
+    privilege: execute
+    resource: variable:password
+    admin: false
+  - role: group:everyone
+    privilege: execute
+    resource: variable:username
+    admin: false
+  - role: group:everyone
+    privilege: read
+    resource: variable:password
+    admin: false
+  - role: group:everyone
+    privilege: read
+    resource: variable:username
+    admin: false
+
+revoke: []

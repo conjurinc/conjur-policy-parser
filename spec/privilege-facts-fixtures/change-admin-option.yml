@@ -1,0 +1,60 @@
+# Test changing the admin option, either positively or negatively.
+existing: |
+  - !permit
+    role: !member
+      role: !group a/dev
+      admin: true
+    resource: !variable a/the-secret
+    privilege: fry
+  - !permit
+    role: !group b/dev
+    resource: !variable b/the-secret
+    privilege: fry
+  - !permit
+    role: !group c/dev
+    resource: !variable c/the-secret
+    privilege: fry
+  - !permit
+    role: !member
+      role: !group d/ops
+      admin: true
+    resource: !variable d/the-secret
+    privilege: fry
+  
+requested: |
+  # revoke admin
+  - !permit
+    role: !group a/dev
+    resource: !variable a/the-secret
+    privilege: fry
+  # grant admin
+  - !permit
+    role: !member
+      role: !group b/dev
+      admin: true
+    resource: !variable b/the-secret
+    privilege: fry
+  # nop
+  - !permit
+    role: !group c/dev
+    resource: !variable c/the-secret
+    privilege: fry
+  # nop
+  - !permit
+    role: !member
+      role: !group d/ops
+      admin: true
+    resource: !variable d/the-secret
+    privilege: fry
+
+apply:
+  - role: group:a/dev
+    resource: variable:a/the-secret
+    privilege: fry
+    admin: false
+  - role: group:b/dev
+    resource: variable:b/the-secret
+    privilege: fry
+    admin: true
+
+revoke: []

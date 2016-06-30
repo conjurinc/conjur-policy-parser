@@ -1,0 +1,13 @@
+existing: |
+  - !grant
+    role: !group developers
+    member: !group ops
+  
+requested: |
+  []
+
+apply: []
+
+revoke:
+  - role: group:developers
+    member: group:ops

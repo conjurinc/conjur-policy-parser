@@ -1,0 +1,26 @@
+policy: |
+  - !permit
+    privilege: [ execute, update ]
+    resource: !variable
+      id: admin-password
+    role:
+    - !member
+      admin: true
+      role: !group
+        id: group1
+
+expectation: |
+  ---
+  - !permit
+    privilege:
+    - execute
+    - update
+    resource: !variable
+      account: the-account
+      id: admin-password
+    role:
+    - !member
+      admin: true
+      role: !group
+        account: the-account
+        id: group1

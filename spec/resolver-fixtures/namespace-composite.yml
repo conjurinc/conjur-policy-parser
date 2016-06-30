@@ -1,0 +1,19 @@
+# Namespace prefixes are applied to objects which are nested within top-level
+# records, such as role and member within a role grant.
+policy: |
+  - !grant
+    role: !group admin
+    member: !user /alice
+
+namespace: dev
+  
+expectation: |
+  ---
+  - !grant
+    member: !member
+      role: !user
+        account: the-account
+        id: alice
+    role: !group
+      account: the-account
+      id: dev/admin
