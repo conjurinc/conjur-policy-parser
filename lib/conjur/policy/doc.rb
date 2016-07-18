@@ -1,9 +1,16 @@
 module Conjur
   module Policy
+    
+    # Patch this; legacy issue
+    module Ruby
+      class Policy
+      end
+    end
+
     module Doc
       Attribute = Struct.new(:id, :kind)
 
-      Operation = Struct.new(:id, :super_id, :description, :example, :attributes)
+      Operation = Struct.new(:id, :super_id, :description, :example, :attributes, :attributes_description, :privileges_description)
       
       class << self
         def list
@@ -26,6 +33,8 @@ module Conjur
             next if type == Conjur::Policy::Ruby::Policy
 
             description = type.send(:description) rescue ""
+            attributes_description = type.send(:attributes_description) rescue ""
+            privileges_description = type.send(:privileges_description) rescue ""
             example = type.send(:example) rescue ""
             attributes = type.fields.map do |id, kind|
               Attribute.new(id, kind)
@@ -33,7 +42,7 @@ module Conjur
             unless attributes.empty?
               super_id = type.superclass.short_name rescue nil
               super_id = nil if super_id == "Base"
-              Operation.new(type.short_name, super_id, description, example, attributes)
+              Operation.new(type.short_name, super_id, description, example, attributes, attributes_description, privileges_description)
             end
           end.compact.sort{|a,b| a.id <=> b.id}
         end

@@ -92,43 +92,41 @@ module Conjur
         include ActsAsRole
 
         self.description = %(
-Create a policy. A policy is composed of the following:
-        
-* **id** A unique id, which can be prefixed by a `namespace`.
-* **body** A set of records such as variables, groups and layers which are "owned" by the policy.
-        
-Under the hood, a Policy is actually a role *and* a resource.
-The role is a role whose kind is "policy", and it has the specified `id`. By default
-the policy role is granted, with `admin` option, to the `--as-group` or `--as-role` option which is specified
-when the policy is loaded. The policy resource is a resource whose kind is "policy", and
-whose owner is the policy role.
-        
-All the records declared in the `body` of the policy are also owned by the policy role
-by default. As a result, the role specified by `--as-group` or `--as-role` has full
-ownership and management of everything defined in the policy.
+A policy is used to collect a set of records and permissions grants into a 
+single scoped namespace with a common owner.
 
-Policies should be self-contained; they should not generally make any reference to 
+The policy can have the standard attributes such as `account`, `owner`, and `id`.        
+It's also required to have a `body` element, which contains:
+        
+* Records which are owned by the policy.
+* `!permit` and `!grant` elements which apply to policy records.
+
+Like a user or group, a policy is a role. All the records declared in the `body` of the policy are 
+owned by the policy role. As a result, any role to whom the policy role is granted inherits
+ownership of everything defined in the policy. Typically, this is the policy owner.
+
+Policies should be self-contained; they should avoid making any reference to 
 records from outside the policy. This way, the policy can be loaded with different
-`--as-group`, `--as-role`, and `--namespace` options to serve different functions in the workflow.
-For example, if a policy is loaded into the `dev` namespace with `--as-group dev-admin`, 
-then a "dev" version of the policy is created with full management assigned to the `dev-admin` group.
-
-[See above](#example) for an example of a complete policy.
+owner and namespace prefix options to serve different functions in the workflow.
+For example, a can be loaded into the `dev` namespace with owner `!group developers`, 
+then a "dev" version of the policy is created with full management assigned to the `developers` group.
+It can also be loaded into the `prod` namespace with owner `!group operations`, creating
+a production version of the same policy.
 )
 
         self.example = %(
 - !policy
-    id: example/v1
-    body:
-    - &secrets
-      - !variable secret
-        
-    - !layer
-        
-    - !grant
-        role: !layer
-        permissions: [ read, execute ]
-        resources: *secrets
+  id: webserver
+  body:
+  - &secrets
+    - !variable ssl/private-key
+ 
+  - !layer
+    
+  - !grant
+    role: !layer
+    permissions: [ read, execute ]
+      resources: *secrets
 )
 
         def role

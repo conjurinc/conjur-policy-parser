@@ -207,29 +207,38 @@ See also: [role-based access control guide](/key_concepts/rbac.html)
         include ActsAsRole
         
         self.description = %(
-Create a [Role](#reference/role) representing a human user. 
+A human user. 
 
-Users have several specific attributes:
-
-* **uidnumber** An integer which is the user's uid number for SSH access to Hosts. The `uidnumber` must
-  be unique across the Conjur system.
-* **public_keys** Stores public keys for the user, which can be retrieved through the 
-  [PubKeys API](http://docs.conjur.apiary.io/#reference/pubkeys/show/show-keys-for-a-user).
-  Public keys loaded through the Policy markup are strictly additive. To remove public keys, use the
-  API or the CLI.
-
-For virtual machines, scripts, and other infrastructure, create [Host](#reference/host) identities instead.
+**Note** For servers, VMs, scripts, PaaS applications, and other code actors, create Hosts instead of Users.
 )
 
+        self.attributes_description = {
+          "uidnumber" => "An integer which is the user's uid number for Unix/Linux systems.",
+          "public_keys" => "Stores public keys for the user, which can be retrieved through the public keys API. "
+        }
+
         self.example = %(
-- !user robert
-    uidnumber: 1208
-    public_keys:
-    - ssh-rsa AAAAB3NzaC1yc2EAAAAD...+10trhK5Pt robert@home
-    - ssh-rsa AAAAB3NzaC1yc2EAAAAD...+10trhK5Pt robert@work
-    annotations:
-      public: true
-      can_predict_movement: false
+- !user
+  id: kevin
+  uidnumber: 1208
+  public_keys:
+  - ssh-rsa AAAAB3NzaC1yc2EAAAAD...+10trhK5Pt kgilpin@laptop
+
+- !user
+  id: bob
+  uidnumber: 1209
+  public_keys:
+  - ssh-rsa AAAAB3NzaC1yc2EAAAAD...DP2Kr5QzRl bob@laptop
+
+- !grant
+  role: !group security_admin
+  member: !member
+    role: !user kevin
+    admin: true
+
+- !grant
+  role: !group operations
+  member: !user bob
 )
 
         attribute :uidnumber, kind: :integer, singular: true, dsl_accessor: true
@@ -249,22 +258,30 @@ For virtual machines, scripts, and other infrastructure, create [Host](#referenc
         attribute :gidnumber, kind: :integer, singular: true, dsl_accessor: true
 
         self.description = %(
-Create a Group record.
+A group of users and other groups.
 
-Users are organized into groups in Conjur. Every user other than
-'admin' should be in a group. When a user becomes a member of a
-group they inherit the group's privileges. You can delegate members
-of the group to be admins. This means that they can add and remove
-other members of the group. The owner of a group is automatically an
-admin.
+When a user becomes a member of a
+group they are granted the group role, and inherit the group's privileges. 
+Group members can be added with or without "admin option". With admin option,
+the member can add and remove members to/from the group.
+        
+Groups can also be members of groups; in this way, groups can be organized and
+nested in a hierarchy.
+        
+`security_admin` is the customary top-level group.
 )
 
+        self.attributes_description = {
+          "gidnumber" => "An integer which is the group's gid number for Unix/Linux systems."
+        }
+               
         self.example = %(
 - !user alice
 - !user bob
 
-- !group ops
-    gidnumber: 110
+- !group
+  id: ops
+  gidnumber: 110
 
 - !grant
     role: !group ops
@@ -284,23 +301,27 @@ admin.
         include ActsAsRole
 
         self.description = %(
-Create a Host record.
+A machine or code; for example, a server, VM, job or container.
         
-A Host is an identity which represents a machine or code; for example, a 
-Server, VM, job or container.
-        
-Hosts can be long-lasting, and managed through the Conjur host factory, or 
-ephemeral, and managed through Conjur oAuth (aka authn-tv).
+Hosts defined in a policy are generally long-lasting hosts, and assigned to a
+layer through a `!grant` entitlement. Assignment to layers is the primary way
+for hosts to get privileges, and also the primary way that users obtain access to hosts.
 )
+        
+        self.privileges_description = {
+          "execute" => "SSH users should have login privileges to the host **without admin** privileges.",
+          "update" => "SSH users should have login privileges to the host **with admin** privileges.",
+        }
 
         self.example = %(
-- !group CERN
-
-- !host httpd
-    annotations:
-      descripton: hypertext web server
-      started: 1990-12-25
-      owner: !group CERN
+- !host
+  id: www-01.home.cern
+  annotations:
+    description: Hypertext web server
+        
+- !grant
+  role: !layer webservers
+  member: !host www-01.cern.org
 )
       end
       
@@ -309,28 +330,60 @@ ephemeral, and managed through Conjur oAuth (aka authn-tv).
         include ActsAsRole
 
         self.description = %(
-Create a Layer record.
+Host are organized into sets called "layers" (sometimes known in some other 
+systems as "host groups"). Layers map logically to the groups of machines and
+code in your infrastructure. For example, a group of servers or VMs can be a layer;
+a cluster of containers which are performing the same function (e.g. running the same image)
+can also be modeled as a layer. A script which is deployed to a server can be a layer.
+And an application which is deployed to a PaaS can also be a layer.
 
-Host are organized into layers in Conjur. Hosts can be added and
-removed from layers, and map logically to your infrastructure. A
-host can be a single machine, but it could also be an application or
-Docker container - where several different applications are running
-on the same machine or VM.
+Using layers to model the privileges of code helps to separate the permissions from the
+physical implementation of the application. For example, if an application is migrated from a PaaS to a 
+container cluster, the logical layers that compose the application (web servers, app servers, database tier,
+cache, message queue) can remain the same.
+        
+**Automatic roles**
+        
+When a layer is created, it automatically creates three additional roles. The name of these
+automatic roles are `use_host`, and `admin_host`. When a host is added to the layer
+(by granting the layer to the host), the layer automatically gives privileges on the host to the
+automatic roles:
+
+* **use_host** gets `execute` privilege on the host
+* **admin_host** gets `update` privilege on the host
+        
+If the host is removed from the layer, then these privileges are revoked.
+        
+Automatic roles are granted using the `!automatic-role` tag, described below.
 )
 
         self.example = %(
-- !host ProteusIV
-- !host AM
-- !host GLaDOS
+        
+- !layer prod/database
+        
+- !layer prod/app
 
-- !layer evil-hosts
+- !group operations
+        
+- !host db-01
+- !host app-01
+- !host app-02
 
 - !grant
-    role: !layer evil-hosts
-    members:
-      - !host ProteusIV
-      - !host AM
-      - !host GLaDOS
+  role: !layer prod/database
+  member: !host db-01
+
+- !grant
+  role: !layer prod/app
+  members:
+  - !host app-01
+  - !host app-02
+        
+- !grant
+  role: !automatic-role
+    record: !layer prod/app
+    role_name: admin_host
+  member: !group operations
 )
       end
       
@@ -341,23 +394,44 @@ on the same machine or VM.
         attribute :mime_type, kind: :string, singular: true, dsl_accessor: true
 
         self.description = %(
-Create a Variable resource to hold a secret value.
+Create a container which holds a sequence of encrypted data values.
 
-Variables are containers for secrets in Conjur. They can hold any
-ascii-armored value. You can annotate resources and also assign them a kind, a
-signifier as to what type of value they hold. Variable values are
-versioned and assigning a value during variable creation is
-optional. When fetching a value, the latest version is returned by
+Variables can hold any ASCII-armored value. Variable values are
+versioned. Any version of the variable is available through the API, 
+however the latest version is returned by
 default.
-
-Variables are resources; you assign roles privileges to them as
-desired.
 )
 
+        self.privileges_description = {
+          "execute" => "Fetch the default value or any historical value",
+          "update" => "Add a new value"
+        }
+        
+        self.attributes_description = {
+          "kind" => "Assigns a descriptive kind to the variable, such as 'password' or 'SSL private key'.",
+          "mime_type" => "the expected MIME type of the values. This attribute is used to set the Content-Type header on HTTP responses."
+        }
+
         self.example = %(
-- !variable spoiler
-    kind: utf-8
-    mime-type: x/json
+- !variable
+  id: prod/db/password
+  kind: password
+
+- !variable
+  id: prod/app/ssl/private_key
+  kind: SSL private key
+  mime_type: application/x-pem-file
+
+- !layer prod/db
+        
+- !layer prod/app
+
+- !permit
+  role: !layer prod/app
+  privileges: [ read, execute ]
+  resources:
+  - !variable prod/db/password
+  - !variable prod/app/ssl/private-key
 )
 
         def custom_attribute_names
@@ -373,29 +447,31 @@ desired.
         include ActsAsResource
 
         self.description = %(
-Create a [Resource](#reference/resource) representing a web service endpoint.
+Represents a web service endpoint, typically an HTTP(S) service.
 
-Web services endpoints are represented in Conjur as a webservice
-resource. Permission grants are straightforward: an input
-HTTP request path is mapped to a webservice resource. The HTTP
+Permission grants are straightforward: an input
+HTTP request path is mapped to a webservice resource id. The HTTP
 method is mapped to an RBAC privilege. A permission check is
 performed, according to the following transaction:
 
-* `role` incoming role on the HTTP (typically, Conjur access token on the request Authorization header)
-* `privilege` read, update, or delete according to HTTP verb
-* `resource` web service resource id
+* **role** client incoming role on the HTTP request. The client can be obtained from an Authorization header (e.g. signed
+  access token), or from the subject name of an SSL client certificate.
+* **privilege** `read`, `update`, or `delete` according to HTTP verb
+* **resource** web service resource id
 )
 
         self.example = %(
 - !group analysts
-- !webservice xkeyscore
-    annotations:
-      description: API endpoint for surveillance apparatus
+
+- !webservice
+  id: xkeyscore
+  annotations:
+    description: API endpoint for surveillance apparatus
 
 - !permit
-    role: !group analysts
-    privilege: read
-    resource: !webservice xkeyscore
+  role: !group analysts
+  privilege: read
+  resource: !webservice xkeyscore
 )
       end
       
@@ -449,9 +525,9 @@ type, which identifies the containing record (e.g. a Layer), and the name of the
 
 The automatic roles of a Layer are:
 
-* `use_host`, for allowing SSH access to each host as the `users` primary group.
-* `admin_host`, for allowing SSH access to each host as the `conjurers` primary group.
-* `observe`, for `read` privileges on the hosts.
+* **use_host**, for allowing SSH access to each host as the `users` primary group.
+* **admin_host**, for allowing SSH access to each host as the `conjurers` primary group.
+* **observe**, for `read` privileges on the hosts.
 )
 
         self.example = %(
