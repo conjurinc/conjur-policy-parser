@@ -8,33 +8,28 @@ module Conjur
         attribute :replace, kind: :boolean, singular: true, dsl_accessor: true
 
         self.description = %(
-Give permissions on a [Resource](#reference/resource) to a [Role](#reference/role). 
+Give privileges on a resource to a role.
 
 Once a privilege is given, permission checks performed by the role
 will return `true`.
 
-Note that permissions are not "inherited" in the same way that roles are.
-If role A is granted to role B, then role B "inherits" all the privileges held 
-by role A. If role A can `execute` a variable, then role B can as well.
-The privileges on each resource are distinct, regardless of how they are named.
-If role A has `execute` privilege on a resource called `dev`, the role does **not**
-gain any privileges on a resource called `dev/password`. Role-based access control
+Note that permissions are not "inherited" by any mechanism such as glob 
+expressions on resource ids; each privilege must be 
+explicitly given on each resource. Inheritance of privileges only happens through
+role grants. Role-based access control
 is explicit in this way to avoid unintendend side-effects from the way that 
 resources are named.
-        
-[More](/key_concepts/rbac.html) on role-based access control in Conjur.
-        
-See also: [Deny](#reference/deny)
 )
 
         self.example = %(
-- !variable answer
-- !user deep_thought
-
+- !layer prod/app
+        
+- !variable prod/database/password
+        
 - !permit
-    role: !user deep_thought
-    privileges: [ read, execute, update ]
-    resource: !variable answer
+  role: !layer prod/app
+  privileges: [ read, execute ]
+  resource: !variable prod/database/password
 )
         
         include ResourceMemberDSL
