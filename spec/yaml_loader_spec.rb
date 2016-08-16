@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'conjur/policy/yaml/loader'
 
 describe Conjur::Policy::YAML::Loader do
   shared_examples_for "round-trip dsl" do |example|

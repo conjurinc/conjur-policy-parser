@@ -4,9 +4,41 @@ module Conjur
     module Types
       # A createable record type.
       class Record < Base
+        class << self
+          def ref_class_name
+            [ name.split("::")[-1], "Ref" ].join
+          end
+
+          # When a Record subclass "Foo" is defined, dynamically define a new class
+          # FooRef, which will emit the same YAML tag as the full subclass. This makes it easier 
+          # and cleaner to build structures of Ruby instances and then emit the proper YAML.
+          def inherited subclass
+            cls = Conjur::Policy::Types.const_set subclass.ref_class_name, Struct.new(:id)
+            cls.send :define_method, :encode_with do |coder|
+              coder.scalar = self.id
+            end
+            cls.send :define_method, :role? do
+              subclass.new.role?
+            end
+            cls.send :define_method, :resource? do
+              subclass.new.resource?
+            end
+            cls.send :define_method, :to_a do
+              [ self ]
+            end
+            cls.send :define_method, :to_ary do
+              [ self ]
+            end
+            ::YAML.add_tag "!#{subclass.name.demodulize.underscore.gsub('_', '-')}", cls
+
+            super
+          end
+        end
+
         def role?
           false
         end
+
         def resource?
           false
         end
