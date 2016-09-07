@@ -28,7 +28,7 @@ module Conjur
         
         raise "account is required" unless account
         raise "ownerid is required" unless ownerid
-        raise "ownerid must be fully qualified" unless ownerid.split(":", 3).length == 3
+        raise "ownerid must be fully qualified account, kind and identifier" unless ownerid.to_s.split(":", 3).length == 3
       end
       
       protected
