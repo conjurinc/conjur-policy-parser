@@ -6,10 +6,7 @@
   resource: !variable
     id: foobar
   role:
-  - !member
-    admin: true
-    role: !group
-      id: developers
-  - !member
-    role: !group
-      id: support
+  - !group
+    id: developers
+  - !group
+    id: support

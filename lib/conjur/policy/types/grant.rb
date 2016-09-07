@@ -2,7 +2,6 @@ module Conjur::Policy::Types
   class Grant < Base
     attribute :role, dsl_accessor: true
     attribute :member
-    attribute :replace, kind: :boolean, singular: true, dsl_accessor: true
 
     include RoleMemberDSL
     include AutomaticRoleDSL
@@ -81,7 +80,7 @@ Some `grant` operations have additional semantics beyond the role grant:
       elsif admin.any?
         " with admin options: #{admin.join(', ')}"
       end
-      %Q(Grant #{role_str} to #{member_str}#{replace ? ' with replacement ' : ''}#{admin_str})
+      %Q(Grant #{role_str} to #{member_str}#{admin_str})
     end
   end
 end

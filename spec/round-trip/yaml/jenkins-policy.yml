@@ -24,7 +24,6 @@
   role: *team1
   privilege: execute
   resource: *mongo_password_1
-  replace: true
 
 - !permit
   role: *team2
@@ -35,5 +34,4 @@
   role: *team1
   privilege: execute
   resource: *mongo_password_2
-  replace: true
   

@@ -30,12 +30,12 @@ describe Conjur::Policy::YAML::Loader do
   it_should_behave_like 'round-trip dsl', 'members'
   it_should_behave_like 'round-trip dsl', 'permit'
   it_should_behave_like 'round-trip dsl', 'permissions'
-  it_should_behave_like 'round-trip dsl', 'deny'
   it_should_behave_like 'round-trip dsl', 'jenkins-policy'
   it_should_behave_like 'round-trip dsl', 'layer-members'
   it_should_behave_like 'round-trip dsl', 'all-types-all-fields'
   it_should_behave_like 'round-trip dsl', 'org'
   it_should_behave_like 'round-trip dsl', 'include'
+  it_should_behave_like 'round-trip dsl', 'policy-empty-body'
 
   it_should_behave_like 'error message', 'unrecognized-type'
   it_should_behave_like 'error message', 'incorrect-type-for-field-1'

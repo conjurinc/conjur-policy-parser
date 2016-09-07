@@ -22,24 +22,18 @@
   resource:
   - *1
   - *2
-  role: !member
-    role: *3
+  role: *3
 - !permit
   privilege: execute
-  replace: true
   resource: *4
-  role: !member
-    role: *3
+  role: *3
 - !permit
   privilege: execute
   resource:
   - *1
   - *2
-  role: !member
-    role: *5
+  role: *5
 - !permit
   privilege: execute
-  replace: true
   resource: *6
-  role: !member
-    role: *3
+  role: *3

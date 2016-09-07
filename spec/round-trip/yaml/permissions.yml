@@ -2,7 +2,5 @@
   resource: !variable foobar
   privilege: [ read, execute ]
   role:
-  - !member
-    role: !group developers
-    admin: true
+  - !group developers
   - !group support

@@ -4,14 +4,11 @@
   role: !group developers
 
 - !permit
-  role: !member
-    role: !group developers
+  role: !group developers
   resource: !variable baz
   privilege: [ read, execute ]
 
 - !permit
   resource: !variable db_password
   privilege: read
-  role: !member
-    role: !group developers
-    admin: true
+  role: !group developers

@@ -1,7 +1,7 @@
 module Conjur
   module Policy
     module Parser
-      VERSION = "0.13.0"
+      VERSION = "2.0.0"
     end
   end
 end

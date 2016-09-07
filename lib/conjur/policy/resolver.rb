@@ -97,29 +97,36 @@ module Conjur
       
       def resolve_field record, visited
         if record.respond_to?(:id) && record.respond_to?(:id=)
-          id = record.id
-          if id.blank?
-            raise "#{record.class.simple_name} has no id" unless namespace
-            id = namespace
-          elsif id[0] == '/'
-            id = id[1..-1]
-          else
-            if record.respond_to?(:resource_kind) && record.resource_kind == "user"
-              id = [ id, user_namespace ].compact.join('@')
-            else
-              id = [ namespace, id ].compact.join('/')
-            end
-          end
-
-          substitute! id
-          
-          record.id = id
+          record.id = substitute_id record
         end
         
         traverse record.referenced_records, visited, method(:resolve_field), method(:on_resolve_policy)
       end
       
       protected
+
+      def substitute_id record
+        id = record.id
+        if id.blank?
+          raise "#{record.class.simple_name} has no id" unless namespace
+          id = namespace
+        elsif id == '/'
+          # pass
+        elsif id[0] == '/'
+          id = id[1..-1]
+        else
+          if record.respond_to?(:resource_kind) && record.resource_kind == "user"
+            id = [ id, user_namespace ].compact.join('@')
+          else
+            id = [ namespace, id ].compact.join('/')
+          end
+        end
+
+        substitute! id
+
+        id
+      end
+
       
       def user_namespace
         namespace.gsub('/', '-') if namespace
@@ -201,7 +208,7 @@ module Conjur
       
       # Sort "Create" and "Record" objects to the front.
       def sort_score record
-        if record.is_a?(Types::Create) || record.is_a?(Types::Record)
+        if record.is_a?(Types::Record)
           -1
         else
           0

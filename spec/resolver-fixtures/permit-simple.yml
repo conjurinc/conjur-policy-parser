@@ -4,10 +4,8 @@ policy: |
     resource: !variable
       id: admin-password
     role:
-    - !member
-      admin: true
-      role: !group
-        id: group1
+    - !group
+      id: group1
 
 expectation: |
   ---
@@ -19,8 +17,6 @@ expectation: |
       account: the-account
       id: admin-password
     role:
-    - !member
-      admin: true
-      role: !group
-        account: the-account
-        id: group1
+    - !group
+      account: the-account
+      id: group1

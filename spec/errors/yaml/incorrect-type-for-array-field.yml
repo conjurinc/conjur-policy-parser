@@ -1,5 +1,5 @@
 # 7, 0
-# Expected a Member for field 'role', got Permit
+# Expected a Role for field 'role', got Permit
 - !permit
   role: 
   - !group developers

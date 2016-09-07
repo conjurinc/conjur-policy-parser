@@ -3,23 +3,19 @@
   privilege: read
   resource: !variable
     id: foobar
-  role: !member
-    role: !group
-      id: developers
+  role: !group
+    id: developers
 - !permit
   privilege:
   - read
   - execute
   resource: !variable
     id: baz
-  role: !member
-    role: !group
-      id: developers
+  role: !group
+    id: developers
 - !permit
   privilege: read
   resource: !variable
     id: db_password
-  role: !member
-    admin: true
-    role: !group
-      id: developers
+  role: !group
+    id: developers

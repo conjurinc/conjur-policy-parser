@@ -2,10 +2,9 @@ module Conjur
   module Policy
     module Types
       class Permit < Base
-        attribute :role, kind: :member
+        attribute :role
         attribute :privilege, kind: :string, dsl_accessor: true
         attribute :resource, dsl_accessor: true
-        attribute :replace, kind: :boolean, singular: true, dsl_accessor: true
 
         self.description = %(
 Give privileges on a resource to a role.

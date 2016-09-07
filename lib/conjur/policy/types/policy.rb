@@ -152,7 +152,7 @@ a production version of the same policy.
           if block_given?
             singleton :body, lambda { Body.new }, &block
           end
-          @body
+          @body ||= []
         end
 
         def body= body

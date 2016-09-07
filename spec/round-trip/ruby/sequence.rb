@@ -1,3 +1,0 @@
-group "developers"
-
-user "alice"
