@@ -6,21 +6,19 @@ policy: |
     body:
     - !host the-host
 
-namespace: dev
-
 expectation: |
   ---
   - !policy
     account: my-account
-    id: dev/myapp
+    id: myapp
     owner: !role
       account: rspec
       id: default-owner
       kind: user
   - !host
     account: the-account
-    id: dev/myapp/the-host
+    id: myapp/the-host
     owner: !role
       account: my-account
-      id: dev/myapp
+      id: myapp
       kind: policy

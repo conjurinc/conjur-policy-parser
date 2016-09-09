@@ -6,10 +6,9 @@ describe Resolver do
   let(:fixture) { YAML.load(File.read(filename), filename) }
   let(:account) { fixture['account'] || "the-account" }
   let(:ownerid) { fixture['ownerid'] || "rspec:user:default-owner" }
-  let(:namespace) { fixture['namespace'] }
   let(:policy) { Conjur::Policy::YAML::Loader.load(fixture['policy']) }
   let(:resolve) {
-    Resolver.resolve(policy, account, ownerid, namespace)
+    Resolver.resolve(policy, account, ownerid)
   }
   before {
     allow(Conjur).to receive(:configuration).and_return double(:configuration, account: account)
@@ -19,6 +18,12 @@ describe Resolver do
   shared_examples_for "verify resolver" do
     it "matches expected YAML" do
       expect(subject).to eq(fixture['expectation'])
+    end
+  end
+
+  shared_examples_for "verify error" do
+    it "raises the expected error" do
+      expect { subject }.to raise_error(fixture['error'])
     end
   end
     
@@ -33,7 +38,11 @@ describe Resolver do
     files.each do |file_example_name|
       describe file_example_name do
         let(:filename) { File.expand_path(file_example_name, fixtures_dir) }
-        it_should_behave_like "verify resolver"
+        if file_example_name =~ /-error.yml/
+          it_should_behave_like "verify error"
+        else
+          it_should_behave_like "verify resolver"
+        end
       end
     end
   end

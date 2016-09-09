@@ -18,7 +18,7 @@ expectation: |
   ---
   - !group
     account: the-account
-    id: root-owner
+    id: "/root-owner"
     owner: !role
       account: rspec
       id: default-owner
@@ -52,7 +52,7 @@ expectation: |
       id: myapp/the-owner
   - !host
     account: the-account
-    id: second-host
+    id: myapp//second-host
     owner: !group
       account: the-account
-      id: root-owner
+      id: myapp//root-owner

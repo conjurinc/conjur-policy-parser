@@ -5,22 +5,21 @@ policy: |
     body:
     - !host the-host
 
-namespace: dev
 ownerid: the-account:group:ops
 
 expectation: |
   ---
   - !policy
     account: the-account
-    id: dev/myapp
+    id: myapp
     owner: !role
       account: the-account
       id: ops
       kind: group
   - !host
     account: the-account
-    id: dev/myapp/the-host
+    id: myapp/the-host
     owner: !role
       account: the-account
-      id: dev/myapp
+      id: myapp
       kind: policy

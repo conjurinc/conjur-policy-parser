@@ -5,10 +5,10 @@ module Conjur
       
       class << self
         # Resolve records to the specified owner id and namespace.
-        def resolve records, account, ownerid, namespace = nil
-          resolver_classes = [ AccountResolver, IdSubstitutionResolver, AnnotationSubstitutionResolver, OwnerResolver, FlattenResolver, DuplicateResolver ]
+        def resolve records, account, ownerid
+          resolver_classes = [ AccountResolver, PolicyNamespaceResolver, RelativePathResolver, OwnerResolver, FlattenResolver, DuplicateResolver ]
           resolver_classes.each do |cls|
-            resolver = cls.new account, ownerid, namespace
+            resolver = cls.new account, ownerid
             records = resolver.resolve records
           end
           records
@@ -21,10 +21,10 @@ module Conjur
       # is indicated (which would be rare).
       # +namespace+ is optional. It's prepended to the id of every record, except for ids which begin
       # with a '/' character.
-      def initialize account, ownerid, namespace = nil
+      def initialize account, ownerid
         @account = account
         @ownerid   = ownerid
-        @namespace = namespace
+        @namespace = nil
         
         raise "account is required" unless account
         raise "ownerid is required" unless ownerid
@@ -67,22 +67,20 @@ module Conjur
       end
     end
 
-    class SubstitutionResolver < Resolver
-      SUBSTITUTIONS = { "$namespace" => :namespace }
-        
+    # Form absolute ids by prepending the implicit namespace defined by the policy tree.
+    class PolicyNamespaceResolver < Resolver
       def resolve records
         traverse records, Set.new, method(:resolve_field), method(:on_resolve_policy)
       end
-      
-      protected
-      
-      def substitute! id
-        SUBSTITUTIONS.each do |k,v|
-          next unless value = send(v)
-          id.gsub! k, value
+
+      def resolve_field record, visited
+        if record.respond_to?(:id) && record.respond_to?(:id=)
+          record.id = prepend_namespace record
         end
+        
+        traverse record.referenced_records, visited, method(:resolve_field), method(:on_resolve_policy)
       end
-      
+
       def on_resolve_policy policy, visited
         saved_namespace = @namespace
         @namespace = policy.id
@@ -90,30 +88,13 @@ module Conjur
       ensure
         @namespace = saved_namespace
       end
-    end
-    
-    # Makes all ids absolute, by prepending the namespace (if any) and the enclosing policy (if any).
-    class IdSubstitutionResolver < SubstitutionResolver
-      
-      def resolve_field record, visited
-        if record.respond_to?(:id) && record.respond_to?(:id=)
-          record.id = substitute_id record
-        end
-        
-        traverse record.referenced_records, visited, method(:resolve_field), method(:on_resolve_policy)
-      end
-      
-      protected
 
-      def substitute_id record
+      def prepend_namespace record
         id = record.id
+
         if id.blank?
-          raise "#{record.class.simple_name} has no id" unless namespace
+          raise "#{record.class.simple_name} has a blank id" unless namespace
           id = namespace
-        elsif id == '/'
-          # pass
-        elsif id[0] == '/'
-          id = id[1..-1]
         else
           if record.respond_to?(:resource_kind) && record.resource_kind == "user"
             id = [ id, user_namespace ].compact.join('@')
@@ -122,29 +103,73 @@ module Conjur
           end
         end
 
-        substitute! id
-
         id
       end
 
-      
       def user_namespace
         namespace.gsub('/', '-') if namespace
       end
     end
-    
-    class AnnotationSubstitutionResolver < SubstitutionResolver
-      def resolve_field record, visited
-        if record.respond_to?(:annotations) && (annotations = record.annotations)
-          annotations.each do |k,v|
-            substitute! v
+
+    # Resolve relative paths which are formed with '../' at the beginning of an id reference.
+    #
+    # A Relative path is allowed only on:
+    #
+    # * The +member+ of a Grant
+    # * The +role+ of a Permit.
+    # * An annotation value
+    class RelativePathResolver < Resolver
+      def resolve records
+        traverse records, Set.new, method(:resolve_relative_path), method(:on_resolve_policy)
+      end
+
+      def resolve_relative_path record, visited
+        resolve_grant record if record.is_a?(Types::Grant)
+        resolve_permit record if record.is_a?(Types::Permit)
+        resolve_annotations record if record.respond_to?(:annotations)
+
+        traverse record.referenced_records, visited, method(:resolve_relative_path), method(:on_resolve_policy)
+      end
+
+      def resolve_grant record
+        Array(record.member).each do |member|
+          member.role.id = absolute_path_of(member.role.id)
+        end
+      end
+
+      def resolve_permit record
+        Array(record.role).each do |role|
+          role.id = absolute_path_of(role.id)
+        end
+      end
+
+      def resolve_annotations record
+        return unless annotations = record.annotations
+        annotations.each do |k,v|
+          if v.split('/').index('..')
+            annotations[k] = absolute_path_of([record.id, v].join('/'))
           end
         end
+      end
 
-        traverse record.referenced_records, visited, method(:resolve_field), method(:on_resolve_policy)
+      def on_resolve_policy policy, visited
+        traverse policy.body, visited, method(:resolve_relative_path), method(:on_resolve_policy)
+      end
+
+      # Substitute leading '..' tokens in the id with an appropriate prefix from the namespace.
+      def absolute_path_of id
+        tokens = id.split('/')
+        while true
+          break unless idx = tokens.find_index('..')
+          raise "Invalid relative reference: #{id}" if idx == 0
+          tokens.delete_at(idx)
+          tokens.delete_at(idx-1)
+        end
+        raise "Invalid relative reference: #{id}" if tokens.empty?
+        tokens.join('/')
       end
     end
-    
+
     # Sets the owner field for any records which support it, and don't have an owner specified.
     # Within a policy, the default owner is the policy role. For global records, the 
     # default owner is the +ownerid+ specified in the constructor.
