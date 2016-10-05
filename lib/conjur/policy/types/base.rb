@@ -292,18 +292,6 @@ module Conjur
         extend TypeChecking
         extend AttributeDefinition
         
-        # Stores a Markdown description of the type.
-        inheritable_attr :description
-
-        # Stores a hash of attribute ids to Markdown descriptions.
-        inheritable_attr :attributes_description
-        
-        # Stores a hash of privilege names to Markdown descriptions.
-        inheritable_attr :privileges_description
-
-        # Stores a YAML example for the type.
-        inheritable_attr :example
-        
         # Stores the mapping from attribute names to Ruby class names that will be constructed
         # to populate the attribute.
         inheritable_attr :yaml_fields

@@ -91,55 +91,15 @@ module Conjur
         include ActsAsResource
         include ActsAsRole
 
-        self.description = %(
-A policy is used to collect a set of records and permissions grants into a 
-single scoped namespace with a common owner.
-
-The policy can have the standard attributes such as `account`, `owner`, and `id`.        
-It's also required to have a `body` element, which contains:
-        
-* Records which are owned by the policy.
-* `!permit` and `!grant` elements which apply to policy records.
-
-Like a user or group, a policy is a role. All the records declared in the `body` of the policy are 
-owned by the policy role. As a result, any role to whom the policy role is granted inherits
-ownership of everything defined in the policy. Typically, this is the policy owner.
-
-Policies should be self-contained; they should avoid making any reference to 
-records from outside the policy. This way, the policy can be loaded with different
-owner and namespace prefix options to serve different functions in the workflow.
-For example, a can be loaded into the `dev` namespace with owner `!group developers`, 
-then a "dev" version of the policy is created with full management assigned to the `developers` group.
-It can also be loaded into the `prod` namespace with owner `!group operations`, creating
-a production version of the same policy.
-)
-
-        self.example = %(
-- !policy
-  id: webserver
-  body:
-  - &secrets
-    - !variable ssl/private-key
- 
-  - !layer
-    
-  - !grant
-    role: !layer
-    permissions: [ read, execute ]
-      resources: *secrets
-)
-
         def role
           raise "account is nil" unless account
-          @role ||= Role.new("#{account}:policy:#{id}").tap do |role|
-            role.owner = Role.new(owner.roleid)
-          end
+          @role ||= Role.new("#{account}:policy:#{id}")
         end
 
         def resource
           raise "account is nil" unless account
           @resource ||= Resource.new("#{account}:policy:#{id}").tap do |resource|
-            resource.owner = Role.new(role.roleid)
+            resource.owner = Role.new(owner.roleid)
           end
         end
 
