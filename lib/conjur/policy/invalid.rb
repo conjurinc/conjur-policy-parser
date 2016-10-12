@@ -1,10 +1,11 @@
 module Conjur
   module Policy
-    class Invalid < Exception
-      attr_reader :mark
+    class Invalid < RuntimeError
+      attr_reader :filename, :mark
       
       def initialize message, filename, mark
         super [ "Error at line #{mark.line}, column #{mark.column} in #{filename}", message ].join(' : ')
+        @filename = filename
         @mark = mark
       end
     end
