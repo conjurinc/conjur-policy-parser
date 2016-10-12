@@ -2,13 +2,9 @@
 - &3 !role
   id: Team1
   kind: jenkins-folder
-  owner: !group
-    id: v4/build
 - &5 !role
   id: Team2
   kind: jenkins-folder
-  owner: !group
-    id: v4/build
 - - &1 !variable
     id: aws/target/access_key_id
   - &2 !variable

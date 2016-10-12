@@ -117,18 +117,24 @@ module Conjur
     #
     # * The +member+ of a Grant
     # * The +role+ of a Permit.
-    # * An annotation value
+    # * Any +owner+.
+    # * Any annotation value.
     class RelativePathResolver < Resolver
       def resolve records
         traverse records, Set.new, method(:resolve_relative_path), method(:on_resolve_policy)
       end
 
       def resolve_relative_path record, visited
+        resolve_owner record if record.respond_to?(:owner)
         resolve_grant record if record.is_a?(Types::Grant)
         resolve_permit record if record.is_a?(Types::Permit)
         resolve_annotations record if record.respond_to?(:annotations)
 
         traverse record.referenced_records, visited, method(:resolve_relative_path), method(:on_resolve_policy)
+      end
+
+      def resolve_owner record
+        record.owner.id = absolute_path_of(record.owner.id) if record.owner && record.owner.id
       end
 
       def resolve_grant record
@@ -156,8 +162,13 @@ module Conjur
         traverse policy.body, visited, method(:resolve_relative_path), method(:on_resolve_policy)
       end
 
+      # Resolve paths starting with '/' as an absolute path by stripping the leading character.
       # Substitute leading '..' tokens in the id with an appropriate prefix from the namespace.
       def absolute_path_of id
+        if id.length > 0 && id[0] == '/'
+          return id[1..-1]
+        end
+
         tokens = id.split('/')
         while true
           break unless idx = tokens.find_index('..')
