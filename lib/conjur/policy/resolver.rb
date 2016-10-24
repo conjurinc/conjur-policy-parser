@@ -93,7 +93,7 @@ module Conjur
         id = record.id
 
         if id.blank?
-          raise "#{record.class.simple_name} has a blank id" unless namespace
+          raise "#{record.class.simple_name.underscore} has a blank id" unless namespace
           id = namespace
         else
           if record.respond_to?(:resource_kind) && record.resource_kind == "user"

@@ -315,6 +315,11 @@ module Conjur
         def custom_attribute_names
           [ ]
         end
+
+        # True if the statement performs a deletion.
+        def delete_statement?
+          false
+        end
         
         def resource?
           false
