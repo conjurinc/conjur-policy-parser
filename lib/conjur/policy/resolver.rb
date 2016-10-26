@@ -98,8 +98,16 @@ module Conjur
         else
           if record.respond_to?(:resource_kind) && record.resource_kind == "user"
             id = [ id, user_namespace ].compact.join('@')
+            class << id
+              attr_accessor :policy_namespace
+            end
+            id.policy_namespace = user_namespace
           else
             id = [ namespace, id ].compact.join('/')
+            class << id
+              attr_accessor :policy_namespace
+            end
+            id.policy_namespace = namespace
           end
         end
 
@@ -165,8 +173,15 @@ module Conjur
       # Resolve paths starting with '/' as an absolute path by stripping the leading character.
       # Substitute leading '..' tokens in the id with an appropriate prefix from the namespace.
       def absolute_path_of id
-        if id.length > 0 && id[0] == '/'
-          return id[1..-1]
+        absolute_prefix = if id.respond_to?(:policy_namespace)
+          id.policy_namespace
+        else
+          nil
+        end
+        absolute_prefix = [ absolute_prefix, '/' ].compact.join('/')
+
+        if id.index(absolute_prefix) == 0
+          return id[absolute_prefix.length..-1]
         end
 
         tokens = id.split('/')
