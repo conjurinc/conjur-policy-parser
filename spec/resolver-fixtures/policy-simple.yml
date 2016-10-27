@@ -13,6 +13,10 @@ policy: |
     - !host
       id: /second-host
       owner: !group /root-owner
+    # This root path won't be resolved; policies can't grant roles outside the policy.
+    - !grant
+      role: !group /root-owner
+      member: !host ../myapp
 
 expectation: |
   ---
@@ -54,5 +58,13 @@ expectation: |
     account: the-account
     id: myapp//second-host
     owner: !group
+      account: the-account
+      id: root-owner
+  - !grant
+    member: !member
+      role: !host
+        account: the-account
+        id: myapp
+    role: !group
       account: the-account
       id: myapp//root-owner

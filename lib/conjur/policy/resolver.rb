@@ -67,26 +67,37 @@ module Conjur
       end
     end
 
-    # Form absolute ids by prepending the implicit namespace defined by the policy tree.
-    class PolicyNamespaceResolver < Resolver
+    # This class traverses the policy tree, recording the hierarchical namespace as it does so.
+    class PolicyTraversal < Resolver
       def resolve records
-        traverse records, Set.new, method(:resolve_field), method(:on_resolve_policy)
+        traverse records, Set.new, method(:resolve_record), method(:on_resolve_policy)
       end
 
-      def resolve_field record, visited
-        if record.respond_to?(:id) && record.respond_to?(:id=)
-          record.id = prepend_namespace record
-        end
-        
-        traverse record.referenced_records, visited, method(:resolve_field), method(:on_resolve_policy)
+      def resolve_record record, visited
+        traverse record.referenced_records, visited, method(:resolve_record), method(:on_resolve_policy)
       end
 
       def on_resolve_policy policy, visited
         saved_namespace = @namespace
         @namespace = policy.id
-        traverse policy.body, visited, method(:resolve_field), method(:on_resolve_policy)
+        traverse policy.body, visited, method(:resolve_record), method(:on_resolve_policy)
       ensure
         @namespace = saved_namespace
+      end
+
+      def user_namespace
+        namespace.gsub('/', '-') if namespace
+      end
+    end
+
+    # Form absolute ids by prepending the implicit namespace defined by the policy tree.
+    class PolicyNamespaceResolver < PolicyTraversal
+      def resolve_record record, visited
+        if record.respond_to?(:id) && record.respond_to?(:id=)
+          record.id = prepend_namespace record
+        end
+
+        super
       end
 
       def prepend_namespace record
@@ -98,24 +109,12 @@ module Conjur
         else
           if record.respond_to?(:resource_kind) && record.resource_kind == "user"
             id = [ id, user_namespace ].compact.join('@')
-            class << id
-              attr_accessor :policy_namespace
-            end
-            id.policy_namespace = user_namespace
           else
             id = [ namespace, id ].compact.join('/')
-            class << id
-              attr_accessor :policy_namespace
-            end
-            id.policy_namespace = namespace
           end
         end
 
         id
-      end
-
-      def user_namespace
-        namespace.gsub('/', '-') if namespace
       end
     end
 
@@ -127,18 +126,14 @@ module Conjur
     # * The +role+ of a Permit.
     # * Any +owner+.
     # * Any annotation value.
-    class RelativePathResolver < Resolver
-      def resolve records
-        traverse records, Set.new, method(:resolve_relative_path), method(:on_resolve_policy)
-      end
-
-      def resolve_relative_path record, visited
+    class RelativePathResolver < PolicyTraversal
+      def resolve_record record, visited
         resolve_owner record if record.respond_to?(:owner)
         resolve_grant record if record.is_a?(Types::Grant)
         resolve_permit record if record.is_a?(Types::Permit)
         resolve_annotations record if record.respond_to?(:annotations)
 
-        traverse record.referenced_records, visited, method(:resolve_relative_path), method(:on_resolve_policy)
+        super
       end
 
       def resolve_owner record
@@ -166,19 +161,10 @@ module Conjur
         end
       end
 
-      def on_resolve_policy policy, visited
-        traverse policy.body, visited, method(:resolve_relative_path), method(:on_resolve_policy)
-      end
-
       # Resolve paths starting with '/' as an absolute path by stripping the leading character.
       # Substitute leading '..' tokens in the id with an appropriate prefix from the namespace.
       def absolute_path_of id
-        absolute_prefix = if id.respond_to?(:policy_namespace)
-          id.policy_namespace
-        else
-          nil
-        end
-        absolute_prefix = [ absolute_prefix, '/' ].compact.join('/')
+        absolute_prefix = [ namespace, '/' ].compact.join('/')
 
         if id.index(absolute_prefix) == 0
           return id[absolute_prefix.length..-1]
