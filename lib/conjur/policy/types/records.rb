@@ -194,7 +194,7 @@ module Conjur
       class HostFactory < Record
         include ActsAsResource
         include ActsAsRole
- 
+
         attribute :role, kind: :role, dsl_accessor: true, singular: true
         attribute :layer, kind: :layer, dsl_accessor: true
         
