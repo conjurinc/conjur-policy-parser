@@ -155,7 +155,7 @@ module Conjur
       def resolve_annotations record
         return unless annotations = record.annotations
         annotations.each do |k,v|
-          if v.split('/').index('..')
+          if v.to_s.split('/').index('..')
             annotations[k] = absolute_path_of([record.id, v].join('/'))
           end
         end

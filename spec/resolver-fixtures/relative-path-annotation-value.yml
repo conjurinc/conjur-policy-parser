@@ -7,6 +7,7 @@ policy: |
         id: the-host
         annotations:
           the-key: ../the-value
+          boolean-key: true
     
 expectation: |
   ---
@@ -21,6 +22,7 @@ expectation: |
     account: the-account
     annotations:
       the-key: the-policy/the-value
+      boolean-key: true
     id: the-policy/the-host
     owner: !role
       account: the-account
