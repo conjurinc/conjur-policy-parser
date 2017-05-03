@@ -5,7 +5,7 @@ require 'conjur-policy-parser-version'
 
 Gem::Specification.new do |spec|
   spec.name          = "conjur-policy-parser"
-  spec.version       = Conjur::Policy::Parser::VERSION
+  spec.version       = Conjur::PolicyParser::VERSION
   spec.authors       = ["Kevin Gilpin"]
   spec.email         = ["kgilpin@gmail.com"]
 

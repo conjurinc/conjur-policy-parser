@@ -1,5 +1,5 @@
 module Conjur
-  module Policy
+  module PolicyParser
     module Types
       class Permit < Base
         attribute :role

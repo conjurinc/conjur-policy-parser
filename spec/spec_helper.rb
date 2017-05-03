@@ -9,6 +9,6 @@ require 'conjur-policy-parser'
 require 'logger'
 
 if ENV['DEBUG']
-  Conjur::Policy::YAML::Handler.logger.level = Logger::DEBUG 
+  Conjur::PolicyParser::YAML::Handler.logger.level = Logger::DEBUG 
 end
 

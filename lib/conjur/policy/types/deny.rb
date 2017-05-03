@@ -1,4 +1,4 @@
-module Conjur::Policy::Types
+module Conjur::PolicyParser::Types
   class Deny < Base
     attribute :role, kind: :role, dsl_accessor: true
     attribute :privilege, kind: :string, dsl_accessor: true

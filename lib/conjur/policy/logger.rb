@@ -1,4 +1,4 @@
-module Conjur::Policy::Logger
+module Conjur::PolicyParser::Logger
   def self.included base
     base.module_eval do
       # Override the logger with this method.

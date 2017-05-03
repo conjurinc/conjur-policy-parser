@@ -7,7 +7,7 @@ SafeYAML::OPTIONS[:default_mode] = :safe
 SafeYAML::OPTIONS[:deserialize_symbols] = false
    
 module Conjur
-  module Policy
+  module PolicyParser
   end
 end
   

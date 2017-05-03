@@ -1,6 +1,6 @@
 # coding: utf-8
 module Conjur
-  module Policy
+  module PolicyParser
     module Types
       # A createable record type.
       class Record < Base
@@ -227,7 +227,7 @@ module Conjur
             id_tokens = id.split('/')
             record_kind = id_tokens.shift
             role_name = id_tokens.pop
-            record = Conjur::Policy::Types.const_get(record_kind.classify).new.tap do |record|
+            record = Conjur::PolicyParser::Types.const_get(record_kind.classify).new.tap do |record|
               record.id = id_tokens.join('/')
               record.account = account
             end

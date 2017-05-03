@@ -1,4 +1,4 @@
-module Conjur::Policy::Types
+module Conjur::PolicyParser::Types
   # Include another policy into the policy.
   class Include < Base
     attribute :file, kind: :string, type: String, singular: true, dsl_accessor: true

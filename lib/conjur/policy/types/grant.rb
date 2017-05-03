@@ -1,4 +1,4 @@
-module Conjur::Policy::Types
+module Conjur::PolicyParser::Types
   class Grant < Base
     attribute :role, dsl_accessor: true
     attribute :member

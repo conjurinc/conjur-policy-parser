@@ -7,7 +7,7 @@ class Object
 end
 
 module Conjur
-  module Policy
+  module PolicyParser
     module YAML
       class Loader
         class << self

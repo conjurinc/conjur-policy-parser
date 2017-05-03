@@ -1,4 +1,4 @@
-module Conjur::Policy::Types
+module Conjur::PolicyParser::Types
   class Member < Base
     def initialize role = nil
       self.role = role

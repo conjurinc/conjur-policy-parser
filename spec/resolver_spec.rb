@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-include Conjur::Policy
+include Conjur::PolicyParser
 
 describe Resolver do
   let(:fixture) { YAML.load(File.read(filename), filename) }
   let(:account) { fixture['account'] || "the-account" }
   let(:ownerid) { fixture['ownerid'] || "rspec:user:default-owner" }
-  let(:policy) { Conjur::Policy::YAML::Loader.load(fixture['policy']) }
+  let(:policy) { Conjur::PolicyParser::YAML::Loader.load(fixture['policy']) }
   let(:resolve) {
     Resolver.resolve(policy, account, ownerid)
   }

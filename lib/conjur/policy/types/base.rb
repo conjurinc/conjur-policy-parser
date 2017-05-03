@@ -1,5 +1,5 @@
 module Conjur
-  module Policy
+  module PolicyParser
     module Types
       # An inheritable class attribute which is cloned by subclasses so the attribute
       # can be a mutable thing such as a Hash.
@@ -232,7 +232,7 @@ module Conjur
         def attribute attr, options = {}
           type = options[:type]
           begin
-            type ||= Conjur::Policy::Types.const_get(attr.to_s.capitalize) 
+            type ||= Conjur::PolicyParser::Types.const_get(attr.to_s.capitalize) 
           rescue NameError
           end
           type = nil if type == String
@@ -335,7 +335,7 @@ module Conjur
           instance_variables.map do |var|
             value = instance_variable_get var
             Array(value).each do |val|
-              result.push val if val.is_a?(Conjur::Policy::Types::Base)
+              result.push val if val.is_a?(Conjur::PolicyParser::Types::Base)
             end
           end
           result.flatten

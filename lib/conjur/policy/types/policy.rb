@@ -1,5 +1,5 @@
 module Conjur
-  module Policy
+  module PolicyParser
     module Types
       class YAMLList < Array
         def tag
@@ -31,13 +31,13 @@ module Conjur
 
         def grant &block
           custom_statement(block) do
-            Conjur::Policy::Types::Grant.new
+            Conjur::PolicyParser::Types::Grant.new
           end
         end
 
         def revoke &block
           custom_statement(block) do
-            Conjur::Policy::Types::Revoke.new
+            Conjur::PolicyParser::Types::Revoke.new
           end
         end
       end
@@ -47,19 +47,19 @@ module Conjur
 
         def permit privilege, &block
           custom_statement(block) do
-            Conjur::Policy::Types::Permit.new(privilege)
+            Conjur::PolicyParser::Types::Permit.new(privilege)
           end
         end
 
         def give &block
           custom_statement(block) do
-            Conjur::Policy::Types::Give.new
+            Conjur::PolicyParser::Types::Give.new
           end
         end
 
         def retire &block
           custom_statement(block) do
-            Conjur::Policy::Types::Retire.new
+            Conjur::PolicyParser::Types::Retire.new
           end
         end
       end

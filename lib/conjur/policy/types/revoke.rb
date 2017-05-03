@@ -1,5 +1,5 @@
 module Conjur
-  module Policy
+  module PolicyParser
     module Types
       class Revoke < Base
         attribute :role, dsl_accessor: true

@@ -1,8 +1,8 @@
 module Conjur
-  module Policy
+  module PolicyParser
     module YAML
       class Handler < Psych::Handler
-        include Conjur::Policy::Logger
+        include Conjur::PolicyParser::Logger
 
         attr_accessor :parser, :filename, :result
         
@@ -82,7 +82,7 @@ module Conjur
             if tag && tag.match(/!(.*)/)
               type_name = $1.underscore.camelize
               begin
-                Conjur::Policy::Types.const_get(type_name)
+                Conjur::PolicyParser::Types.const_get(type_name)
               rescue NameError
                 raise "Unrecognized data type '#{tag}'"
               end

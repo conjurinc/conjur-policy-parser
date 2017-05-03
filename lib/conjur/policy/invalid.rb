@@ -1,5 +1,5 @@
 module Conjur
-  module Policy
+  module PolicyParser
     class Invalid < RuntimeError
       attr_reader :filename, :mark
       

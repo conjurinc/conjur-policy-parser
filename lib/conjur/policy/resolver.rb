@@ -1,5 +1,5 @@
 module Conjur
-  module Policy
+  module PolicyParser
     class Resolver
       attr_reader :account, :ownerid, :namespace
       
