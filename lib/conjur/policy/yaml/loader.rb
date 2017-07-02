@@ -28,7 +28,7 @@ module Conjur
               handler.log { $!.backtrace.join("  \n") }
               raise Invalid.new($!.message || "(no message)", filename, parser.mark)
             end
-            records = handler.result
+            records = handler.result || []
             
             parse_includes records, dirname
   
