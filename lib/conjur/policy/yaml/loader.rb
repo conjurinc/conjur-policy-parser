@@ -42,7 +42,7 @@ module Conjur
           protected
           
           def parse_includes records, dirname
-            records.each_with_index do |record, idx|
+            Array(records).each_with_index do |record, idx|
               if record.is_a?(Array)
                 parse_includes record, dirname
               elsif record.is_a?(Types::Policy)

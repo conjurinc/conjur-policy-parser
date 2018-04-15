@@ -171,6 +171,11 @@ module Conjur
         include ActsAsResource
         include ActsAsRole
       end
+
+      class CredentialFactory < Record
+        include ActsAsResource
+        include ActsAsRole
+      end
       
       class Variable < Record
         include ActsAsResource
