@@ -6,6 +6,10 @@ module Conjur
 
         def delete_statement?; true; end
 
+        def subject_id
+          record.id
+        end
+
         def to_s
           "Delete #{record}"
         end

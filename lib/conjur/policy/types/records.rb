@@ -10,6 +10,10 @@ module Conjur
         def resource?
           false
         end
+
+        def subject_id
+          id
+        end
       end
       
       module ActsAsResource

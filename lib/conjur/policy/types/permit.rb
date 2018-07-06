@@ -11,6 +11,10 @@ module Conjur
         def initialize privilege = nil
           self.privilege = privilege
         end
+
+        def subject_id
+          resource.id
+        end
         
         def to_s
           if Array === role

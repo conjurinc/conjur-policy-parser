@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'spec_helper'
 
 include Conjur::PolicyParser
@@ -48,4 +49,31 @@ describe Resolver do
       end
     end
   end
+end
+
+describe Conjur::PolicyParser::PolicyNamespaceResolver do
+  it "prepends namespace to resource ids" do
+    record = Types::Resource.new 'test-kind', 'test-id'
+    resolver.resolve_record record, nil
+    expect(record.id).to eq 'namespace/test-id'
+  end
+
+  it "appends namespace to user ids" do
+    record = Types::User.new 'test-id'
+    resolver.resolve_record record, nil
+    expect(record.id).to eq 'test-id@namespace'
+  end
+
+  it "leaves absolute ids intact" do
+    record = Types::User.new '/test-id'
+    resolver.resolve_record record, nil
+    expect(record.id).to eq '/test-id'
+  end
+
+  subject(:resolver) do
+    described_class.new('account', 'account:user:owner').tap do |r|
+      allow(r).to receive_messages namespace: 'namespace'
+    end
+  end
+  Types = Conjur::PolicyParser::Types
 end

@@ -6,6 +6,10 @@ module Conjur::PolicyParser::Types
     include RoleMemberDSL
     include AutomaticRoleDSL
 
+    def subject_id
+      role.id
+    end
+
     def to_s
       role_str   = if role.kind_of?(Array)
         role.join(', ')
