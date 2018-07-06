@@ -143,11 +143,12 @@ module Conjur
 
         attribute :uidnumber, kind: :integer, singular: true, dsl_accessor: true
         attribute :public_key, kind: :string, dsl_accessor: true
+        attribute :restricted_to, kind: :string, singular: true, dsl_accessor: true
 
         def id_attribute; 'login'; end
         
         def custom_attribute_names
-          [ :uidnumber, :public_key ]
+          [ :uidnumber, :public_key, :restricted_to ]
         end
       end
       
@@ -165,6 +166,12 @@ module Conjur
       class Host < Record
         include ActsAsResource
         include ActsAsRole
+
+        attribute :restricted_to, kind: :string, singular: true, dsl_accessor: true
+
+        def custom_attribute_names
+          [ :restricted_to ]
+        end
       end
       
       class Layer < Record
