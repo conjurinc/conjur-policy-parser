@@ -12,3 +12,7 @@ if ENV['DEBUG']
   Conjur::PolicyParser::YAML::Handler.logger.level = Logger::DEBUG 
 end
 
+require 'sorted_yaml.rb'
+RSpec.configure do |c|
+  c.include SortedYAML
+end

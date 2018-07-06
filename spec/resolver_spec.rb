@@ -17,7 +17,9 @@ describe Resolver do
   
   shared_examples_for "verify resolver" do
     it "matches expected YAML" do
-      expect(subject).to eq(fixture['expectation'])
+      expected = sorted_yaml fixture['expectation'] 
+      actual = sorted_yaml subject
+      expect(actual).to eq(expected)
     end
   end
 
