@@ -143,7 +143,7 @@ module Conjur
 
         attribute :uidnumber, kind: :integer, singular: true, dsl_accessor: true
         attribute :public_key, kind: :string, dsl_accessor: true
-        attribute :restricted_to, kind: :string, singular: true, dsl_accessor: true
+        attribute :restricted_to, kind: :string, dsl_accessor: true
 
         def id_attribute; 'login'; end
         
@@ -167,7 +167,7 @@ module Conjur
         include ActsAsResource
         include ActsAsRole
 
-        attribute :restricted_to, kind: :string, singular: true, dsl_accessor: true
+        attribute :restricted_to, kind: :string, dsl_accessor: true
 
         def custom_attribute_names
           [ :restricted_to ]

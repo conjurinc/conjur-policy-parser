@@ -5,3 +5,7 @@
 - !user
   id: alice
   restricted_to: 192.168.0.0/16
+
+- !user
+  id: bob
+  restricted_to: [ 192.168.0.1/16, 192.168.0.2/16 ]
