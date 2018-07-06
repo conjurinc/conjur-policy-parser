@@ -7,6 +7,10 @@ module Conjur
 
         def delete_statement?; true; end
 
+        def subject_id
+          role.id
+        end
+
         def to_s
           "Revoke #{role} from #{member}"
         end

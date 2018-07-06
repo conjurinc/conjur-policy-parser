@@ -340,6 +340,13 @@ module Conjur
           end
           result.flatten
         end
+
+        # ID of the 'subject' of this record, ie. the thing that's being acted
+        # upon. This is used to perform sanity checks against acting on
+        # unqualified objects.
+        def subject_id
+          raise ArgumentError, "#subject_id not implemented for #{self.class}"
+        end
         
         class << self
           # Hook to register the YAML type.

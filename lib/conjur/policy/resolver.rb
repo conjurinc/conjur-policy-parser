@@ -6,8 +6,15 @@ module Conjur
       class << self
         # Resolve records to the specified owner id and namespace.
         def resolve records, account, ownerid
-          resolver_classes = [ AccountResolver, PolicyNamespaceResolver, RelativePathResolver, OwnerResolver, FlattenResolver, DuplicateResolver ]
-          resolver_classes.each do |cls|
+          [
+            AccountResolver,
+            PolicyNamespaceResolver,
+            RelativePathResolver,
+            OwnerResolver,
+            FlattenResolver,
+            DuplicateResolver,
+            AbsoluteChecker
+          ].each do |cls|
             resolver = cls.new account, ownerid
             records = resolver.resolve records
           end
@@ -106,6 +113,8 @@ module Conjur
         if id.blank?
           raise "#{record.class.simple_name.underscore} has a blank id" unless namespace
           id = namespace
+        elsif id.start_with? '/'
+          # absolute id, pass
         else
           if record.respond_to?(:resource_kind) && record.resource_kind == "user"
             id = [ id, user_namespace ].compact.join('@')
@@ -164,11 +173,7 @@ module Conjur
       # Resolve paths starting with '/' as an absolute path by stripping the leading character.
       # Substitute leading '..' tokens in the id with an appropriate prefix from the namespace.
       def absolute_path_of id
-        absolute_prefix = [ namespace, '/' ].compact.join('/')
-
-        if id.index(absolute_prefix) == 0
-          return id[absolute_prefix.length..-1]
-        end
+        return id[1..-1] if id.start_with? '/'
 
         tokens = id.split('/')
         while true
@@ -300,6 +305,19 @@ module Conjur
           record.remove_instance_variable :@owner
         end
         traverse record.referenced_records, visited, method(:resolve_owner)
+      end
+    end
+
+    # By the end of resolution there shouldn't be any absolute ids left.
+    # This 'resolver' performs this final check.
+    class AbsoluteChecker < Resolver
+      def resolve records
+        traverse records, Set.new, method(:resolve_record)
+      end
+
+      def resolve_record record, _visited
+        id = record.subject_id
+        raise "Illegal absolute id: #{id}" if id.start_with? '/'
       end
     end
   end

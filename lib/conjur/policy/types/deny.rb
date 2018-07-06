@@ -8,6 +8,10 @@ module Conjur::PolicyParser::Types
 
     def delete_statement?; true; end
 
+    def subject_id
+      resource.id
+    end
+
     def to_s
       "Deny #{role} to '#{privilege}' #{resource}"
     end

@@ -1,3 +1,7 @@
+# v3.0.1
+
+* Fix handling of absolute user ids.
+
 # v3.0.0
 
 * Nextgen-compatible parser.
