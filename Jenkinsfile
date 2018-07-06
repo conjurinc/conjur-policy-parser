@@ -9,10 +9,32 @@ pipeline {
   }
 
   stages {
-    stage('Test') {
+    stage('Test 2.3') {
+      environment {
+        RUBY_VERSION = '2.3.5'
+      }
       steps {
         sh './test.sh'
+        junit 'spec/reports/*.xml'
+      }
+    }
 
+    stage('Test 2.4') {
+      environment {
+        RUBY_VERSION = '2.4.2'
+      }
+      steps {
+        sh './test.sh'
+        junit 'spec/reports/*.xml'
+      }
+    }
+
+    stage('Test 2.5') {
+      environment {
+        RUBY_VERSION = '2.5.1'
+      }
+      steps {
+        sh './test.sh'
         junit 'spec/reports/*.xml'
       }
     }
