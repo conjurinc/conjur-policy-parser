@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'simplecov'
 SimpleCov.start do
   add_filter '/spec/'
@@ -15,4 +16,6 @@ end
 require 'sorted_yaml.rb'
 RSpec.configure do |c|
   c.include SortedYAML
+  c.order = "random"
+  c.filter_run_when_matching :focus
 end
