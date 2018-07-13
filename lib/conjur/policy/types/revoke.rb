@@ -8,7 +8,7 @@ module Conjur
         def delete_statement?; true; end
 
         def subject_id
-          role.id
+          Array(role).map(&:id)
         end
 
         def to_s

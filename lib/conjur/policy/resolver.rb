@@ -316,7 +316,10 @@ module Conjur
       end
 
       def resolve_record record, _visited
-        id = record.subject_id
+        Array(record.subject_id).each(&method(:check_id))
+      end
+
+      def check_id id
         raise "Illegal absolute id: #{id}" if id.start_with? '/'
       end
     end

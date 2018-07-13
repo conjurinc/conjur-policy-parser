@@ -390,25 +390,21 @@ module Conjur
         end
       end
       
-      # Define DSL accessor for Resource +role+ field.
-      module ResourceMemberDSL
-        def self.included(base)
-          base.module_eval do
-            alias role_accessor role
-            
-            def role r = nil, grant_option = nil
-              if r
-                role = Member.new(r)
-                role.admin = true if grant_option == true
-                if self.role
-                  self.role = Array(self.role) + [ role ]
-                else
-                  self.role = role
-                end
-              else
-                role_accessor
-              end
-            end
+      # Base class for resource operations like 'permit' and 'deny'
+      class ResourceOpBase < Base
+        def subject_id
+          Array(resource).map(&:id)
+        end
+
+        class << self
+          # Yes, it's :reek:ControlParameter, I suppose,
+          # however this is the interface.
+          def role member = nil, grant_option = nil
+            return super unless member
+
+            role = Member.new(member)
+            role.admin = true if grant_option == true
+            self.role = Array(super) << role
           end
         end
       end

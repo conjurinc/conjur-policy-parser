@@ -7,7 +7,7 @@ module Conjur::PolicyParser::Types
     include AutomaticRoleDSL
 
     def subject_id
-      role.id
+      Array(role).map(&:id)
     end
 
     def to_s

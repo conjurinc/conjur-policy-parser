@@ -1,3 +1,7 @@
+# v3.0.2
+
+* Fix handling of multiple subjects in a single record.
+
 # v3.0.1
 
 * Fix handling of absolute user ids.

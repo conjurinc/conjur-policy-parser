@@ -1,21 +1,16 @@
 module Conjur
   module PolicyParser
     module Types
-      class Permit < Base
+      # !permit policy entry
+      class Permit < ResourceOpBase
         attribute :role
         attribute :privilege, kind: :string, dsl_accessor: true
         attribute :resource, dsl_accessor: true
 
-        include ResourceMemberDSL
-        
         def initialize privilege = nil
           self.privilege = privilege
         end
 
-        def subject_id
-          resource.id
-        end
-        
         def to_s
           if Array === role
             role_string = role.map &:role
