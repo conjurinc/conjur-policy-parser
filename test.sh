@@ -7,7 +7,7 @@ RUBY_VERSION=$(cut -d '-' -f 2 <<< $RUBY_VERSION)
 
 main() {
   build
-  run_tests
+  run_tests "$@"
 }
 
 # internal functions
@@ -20,4 +20,4 @@ run_tests() {
   docker-compose run test "$@"
 }
 
-main
+main "$@"

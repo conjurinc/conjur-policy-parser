@@ -1,3 +1,5 @@
 #!/bin/bash -ex
 
-bundle exec rake jenkins || true
+bundle
+
+bundle exec rake jenkins

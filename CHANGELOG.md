@@ -1,3 +1,6 @@
+# v3.0.3
+* Allow annotations to be set on a policy resource.
+
 # v3.0.2
 
 * Fix handling of multiple subjects in a single record.
