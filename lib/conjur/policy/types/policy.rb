@@ -100,6 +100,7 @@ module Conjur
           raise "account is nil" unless account
           @resource ||= Resource.new("#{account}:policy:#{id}").tap do |resource|
             resource.owner = Role.new(owner.roleid)
+            resource.annotations = annotations
           end
         end
 
