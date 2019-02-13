@@ -13,7 +13,7 @@ services:
       dockerfile: Dockerfile.test
       args:
         RUBY_VERSION: ${RUBY_VERSION}
-    entrypoint: ci/test.sh
+    command: ci/test.sh
     environment:
       - DEBUG
     volumes:
