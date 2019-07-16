@@ -219,6 +219,25 @@ module Conjur
           end
         end
       end
+
+      class PolicyFactory < Record
+        include ActsAsResource
+        include ActsAsRole
+
+        attribute :role,     kind: :role,   singular: true, dsl_accessor: true
+        attribute :template, kind: :string, singular: true, dsl_accessor: true
+        attribute :base,     kind: :policy, singular: true, dsl_accessor: true
+
+        alias role_accessor role
+        
+        def role *args
+          if args.empty?
+            role_accessor || self.owner
+          else
+            role_accessor(*args)
+          end
+        end
+      end
       
       class AutomaticRole < Base
         include ActsAsRole
