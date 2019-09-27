@@ -45,5 +45,11 @@
 - !policy-factory
   id: certificates
   base: !policy base-policy
-  template: |
+  template:
+    - !policy sub-policy
+
+- !policy-factory
+  id: root-factory
+  owner: !user bob
+  template:
     - !policy sub-policy

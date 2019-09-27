@@ -224,12 +224,11 @@ module Conjur
         include ActsAsResource
         include ActsAsRole
 
-        attribute :role,     kind: :role,   singular: true, dsl_accessor: true
-        attribute :template, kind: :string, singular: true, dsl_accessor: true
+        attribute :role,     kind: :role, singular: true, dsl_accessor: true
         attribute :base,     kind: :policy, singular: true, dsl_accessor: true
 
         alias role_accessor role
-        
+
         def role *args
           if args.empty?
             role_accessor || self.owner
@@ -237,8 +236,19 @@ module Conjur
             role_accessor(*args)
           end
         end
+
+        def template &block
+          if block_given?
+            singleton :template, lambda { Body.new }, &block
+          end
+          @template ||= []
+        end
+
+        def template= template
+          @template = template
+        end
       end
-      
+
       class AutomaticRole < Base
         include ActsAsRole
         
