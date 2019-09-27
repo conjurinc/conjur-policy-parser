@@ -237,9 +237,15 @@ module Conjur
           end
         end
 
+        # Don't include template records, these are pointers to
+        # future records, not records in this policy
+        def referenced_records
+          super - Array(@template)
+        end
+
         def template &block
           if block_given?
-            singleton :template, lambda { Body.new }, &block
+            singleton :template, lambda { Template.new }, &block
           end
           @template ||= []
         end
