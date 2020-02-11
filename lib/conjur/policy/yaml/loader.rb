@@ -12,13 +12,11 @@ module Conjur
       class Loader
         class << self
           def load yaml, filename = nil
-		puts "+++++++++++++ YAML::load 1 ++++++++++" 
             dirname = if filename
               File.dirname(filename)
             else
               '.'
             end
-	    puts "+++++++++++++ YAML::load 2 ++++++++++"            
             parser = Psych::Parser.new(handler = Handler.new)
             handler.filename = filename
             handler.parser = parser
