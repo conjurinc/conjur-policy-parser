@@ -1,6 +1,7 @@
 - !role
   kind: jenkins-folder
   id: team-1
+  api_key_enabled: true
 
 - !resource
   kind: variable

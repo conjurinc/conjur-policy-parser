@@ -71,6 +71,12 @@ module Conjur
       end
       
       module ActsAsRole
+        def self.included(base)
+          base.module_eval do
+            attribute :api_key_enabled, kind: :boolean, singular: true, dsl_accessor: true
+          end
+        end
+
         def roleid default_account = nil
           [ account || default_account, role_kind, id ].join(":")
         end
