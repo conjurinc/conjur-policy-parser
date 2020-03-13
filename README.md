@@ -1,3 +1,5 @@
+[DEPRECATED] Please use the `conjur-oss` branch for future Conjur OSS changes.
+
 # Conjur Policy Parser
 
 Parser library for Conjur Policy YAML.
