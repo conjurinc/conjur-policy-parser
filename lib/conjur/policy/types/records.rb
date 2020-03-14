@@ -182,7 +182,7 @@ module Conjur
         include ActsAsResource
         include ActsAsRole
       end
-      
+
       class Variable < Record
         include ActsAsResource
         
@@ -200,6 +200,7 @@ module Conjur
       
       class Webservice < Record
         include ActsAsResource
+        include ActsAsRole
       end
       
       class HostFactory < Record
