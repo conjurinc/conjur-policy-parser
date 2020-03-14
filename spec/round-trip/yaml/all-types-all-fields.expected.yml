@@ -2,6 +2,7 @@
 - !role
   id: team-1
   kind: jenkins-folder
+  api_key_enabled: true
 - !resource
   id: my-secret
   kind: variable

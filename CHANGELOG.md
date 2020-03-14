@@ -1,3 +1,9 @@
+# Unreleased
+
+## Added
+
+* Added `api_key_enabled` attribute to role record.
+
 # v3.0.3
 * Allow annotations to be set on a policy resource.
 
