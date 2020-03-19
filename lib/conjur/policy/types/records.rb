@@ -31,7 +31,11 @@ module Conjur
             
             def annotation name, value
               self.annotations ||= {}
-              self.annotations[name] = value
+              if self.annotations.has_key? name
+                raise "Duplicate annotation of type #{name}"
+              else
+                self.annotations[name] = value
+              end
             end
           end
         end
