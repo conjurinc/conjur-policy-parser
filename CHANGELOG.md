@@ -1,3 +1,6 @@
+# v3.0.4
+* Throw an error when a policy has duplicate members on a resource 
+
 # v3.0.3
 * Allow annotations to be set on a policy resource.
 

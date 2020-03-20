@@ -202,7 +202,7 @@ module Conjur
           
           def initialize parent, anchor, type
             super parent, anchor
-            
+            @existing_members = Set.new()
             @record = type.new
           end
   
@@ -229,6 +229,11 @@ module Conjur
   
           # Begins a new map entry.
           def scalar value, tag, quoted, anchor
+            if @existing_members.include?(value)
+              raise "Duplicate attribute: #{value}"
+            else
+              @existing_members.add(value);
+            end
             value = scalar_value(value, tag, quoted, type)
             MapEntry.new(self, anchor, @record, value).tap do |h|
               h.push_handler
