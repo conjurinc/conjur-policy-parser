@@ -1,8 +1,0 @@
-policy: |
-  - !host
-  id: test-app
-  annotations:
-    description: value1
-    description: value2
-
-error: "Duplicate annotation of type description"
