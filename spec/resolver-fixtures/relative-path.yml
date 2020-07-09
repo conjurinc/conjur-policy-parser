@@ -2,7 +2,9 @@
 policy: |
   # Relative paths don't get any special handling in record creation
   - !group ../invalid-group
+
   - !group the-group
+
   - !policy
     id: myapp
     body:
@@ -12,11 +14,19 @@ policy: |
     - !group ../the-third-group
 
     - !variable
+    
     - !permit
       # Permit 'role' is expanded as a relative path
       role: ../the-group
       privilege: [ read, execute ]
       resource: !variable
+
+    - !deny
+      # deny 'role' is expanded as a relative path
+      role: ../the-group
+      privilege: [ read, execute ]
+      resource: !variable
+
     - !permit
       role: ../the-group
       privilege: [ read, execute ]
@@ -31,6 +41,11 @@ policy: |
     - !grant
       role: the-group
       # Grant 'member' is expanded as a relative path
+      member: !group ../the-group
+
+    - !revoke
+      role: the-group
+      # Revoke 'member' is expanded as a relative path
       member: !group ../the-group
 
 expectation: |
@@ -94,6 +109,16 @@ expectation: |
     role: !role
       account: the-account
       id: the-group
+  - !deny
+    privilege:
+    - read
+    - execute
+    resource: !variable
+      account: the-account
+      id: myapp
+    role: !role
+      account: the-account
+      id: the-group
   - !permit
     privilege:
     - read
@@ -117,6 +142,13 @@ expectation: |
       role: !group
         account: the-account
         id: the-group
+    role: !role
+      account: the-account
+      id: myapp/the-group
+  - !revoke
+    member: !member
+      account: the-account
+      id: the-group
     role: !role
       account: the-account
       id: myapp/the-group
