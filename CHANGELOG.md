@@ -1,3 +1,6 @@
+# Unreleased
+* Allow the usage of relative paths on revoke and deny policies.
+
 # v3.0.4
 * Throw an error when a policy has duplicate members on a resource 
 
