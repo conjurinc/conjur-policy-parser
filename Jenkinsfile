@@ -36,9 +36,10 @@ pipeline {
       steps {
         sh './test.sh'
         junit 'spec/reports/*.xml'
+        cobertura coberturaReportFile: 'coverage/coverage.xml'
       }
     }
-    
+
     // Only publish to RubyGems if branch is 'master'
     // AND someone confirms this stage within 5 minutes
     stage('Publish to RubyGems?') {
@@ -77,9 +78,9 @@ pipeline {
         sh 'docker run -i --rm -v $PWD:/src -w /src alpine/git clean -fxd'
         deleteDir()
       }
-    }    
+    }
   }
-  
+
   post {
     always {
       cleanupAndNotify(currentBuild.currentResult)

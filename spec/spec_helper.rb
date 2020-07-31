@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 require 'simplecov'
+require 'simplecov-cobertura'
+
+SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
 SimpleCov.start do
   add_filter '/spec/'
   add_filter '/features/'
@@ -10,7 +13,7 @@ require 'conjur-policy-parser'
 require 'logger'
 
 if ENV['DEBUG']
-  Conjur::PolicyParser::YAML::Handler.logger.level = Logger::DEBUG 
+  Conjur::PolicyParser::YAML::Handler.logger.level = Logger::DEBUG
 end
 
 require 'sorted_yaml.rb'
