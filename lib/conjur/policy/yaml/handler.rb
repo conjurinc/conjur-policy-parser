@@ -214,7 +214,7 @@ module Conjur
               begin
                 @record.send("#{key}=", value)
               rescue NoMethodError
-                raise "No such attribute '#{key}' on type #{@record.class.short_name}"
+                raise "No such ++++++++++++++++++ attribute '#{key}' on type #{@record.class.short_name}"
               end
             end
           end
