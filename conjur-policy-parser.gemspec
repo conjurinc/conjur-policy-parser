@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec-expectations"
   spec.add_development_dependency "ci_reporter_rspec"
   spec.add_development_dependency "simplecov"
+  spec.add_development_dependency "simplecov-cobertura"
   spec.add_development_dependency "pry"
   spec.add_development_dependency "deepsort"
 end
