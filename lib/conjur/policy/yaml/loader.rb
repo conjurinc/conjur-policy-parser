@@ -17,6 +17,8 @@ module Conjur
             else
               '.'
             end
+	    handler.log("++++++++++++ load ofira ++++++++++")
+	    puts "++++++++++++ load ofira ++++++++++++"
             parser = Psych::Parser.new(handler = Handler.new)
             handler.filename = filename
             handler.parser = parser

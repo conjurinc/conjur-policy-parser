@@ -211,6 +211,7 @@ module Conjur
             if @record.respond_to?(:[]=)
               @record.send(:[]=, key, value)
             else
+		 handler.log { "#{handler.indent}Setting map entry +++++++++++++ ofira #{key} = #{value}" }
               begin
                 @record.send("#{key}=", value)
               rescue NoMethodError
