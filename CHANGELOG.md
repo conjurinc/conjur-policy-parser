@@ -1,5 +1,8 @@
 # Unreleased
 * Allow the usage of relative paths on revoke and deny policies.
+* Return validation error when `restricted_to` values are not correct CIDR
+  notated IP addresses or ranges.
+  [cyberark/conjur-policy-parser#27](https://github.com/cyberark/conjur-policy-parser/issues/27)
 
 # v3.0.4
 * Throw an error when a policy has duplicate members on a resource 
@@ -22,5 +25,4 @@
 # v2.2.0
 
 * Add deletion statements `delete`, `deny`, and `revoke`.
-
 

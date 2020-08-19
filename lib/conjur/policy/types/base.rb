@@ -121,6 +121,21 @@ module Conjur
             String
         end
 
+        # +value+ must be a CIDR.
+        def expect_cidr name, value
+          # A CIDR value is valid if it can be parsed as an IPAddr object
+          validate_cidr = lambda do
+            IPAddr.new(value)
+          rescue IPAddr::Error
+            raise "Invalid IP address or CIDR range '#{value}'"
+          end
+
+          expect_type name,
+            value,
+            "CIDR",
+            validate_cidr
+        end
+
         # +value+ must be a Integer.
         def expect_integer name, value
           expect_type name,
