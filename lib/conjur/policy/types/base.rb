@@ -1,3 +1,5 @@
+require 'conjur/cidr'
+
 module Conjur
   module PolicyParser
     module Types
@@ -123,9 +125,15 @@ module Conjur
 
         # +value+ must be a CIDR.
         def expect_cidr name, value
-          # A CIDR value is valid if it can be parsed as an IPAddr object
           validate_cidr = lambda do
-            IPAddr.new(value)
+            cidr = Conjur::CIDR.new(value)
+
+            unless cidr.valid_input?
+              raise "Invalid IP address or CIDR range '#{value}': Value has " \
+                "bits set to right of mask. Did you mean '#{cidr.to_s}'?"
+            end
+
+            true # CIDR is valid
           rescue IPAddr::Error
             raise "Invalid IP address or CIDR range '#{value}'"
           end
