@@ -9,6 +9,10 @@ module Conjur
       @ipaddr = IPAddr.new(cidr)
     end
 
+    def ipv4?
+      @ipaddr.ipv4?
+    end
+
     def to_s
       "#{@ipaddr}/#{@ipaddr.prefix}"
     end

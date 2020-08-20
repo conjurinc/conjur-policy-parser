@@ -51,6 +51,7 @@ describe Conjur::PolicyParser::YAML::Loader do
   it_should_behave_like 'error message', 'no-such-attribute'
   it_should_behave_like 'error message', 'invalid-cidr'
   it_should_behave_like 'error message', 'invalid-cidr-2'
+  it_should_behave_like 'error message', 'invalid-cidr-3'
   it_should_behave_like 'error message', 'invalid-cidr-in-array'
   it_should_behave_like 'error message', 'multiple-invalid-cidr-in-array'
 end

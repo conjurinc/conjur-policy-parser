@@ -4,7 +4,7 @@
   notated IP addresses or ranges.
   [cyberark/conjur-policy-parser#27](https://github.com/cyberark/conjur-policy-parser/issues/27)
 * Return validation error when `restricted_to` values include address bits to the
-  right of the provided netmask.
+  right of the provided netmask, or if the CIDR is not IPv4.
   [cyberark/conjur-policy-parser#30](https://github.com/cyberark/conjur-policy-parser/issues/30) 
 
 # v3.0.4
