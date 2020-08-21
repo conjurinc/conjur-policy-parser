@@ -9,29 +9,29 @@ pipeline {
   }
 
   stages {
-    stage('Test 2.3') {
-      environment {
-        RUBY_VERSION = '2.3.5'
-      }
-      steps {
-        sh './test.sh'
-        junit 'spec/reports/*.xml'
-      }
-    }
-
-    stage('Test 2.4') {
-      environment {
-        RUBY_VERSION = '2.4.2'
-      }
-      steps {
-        sh './test.sh'
-        junit 'spec/reports/*.xml'
-      }
-    }
-
     stage('Test 2.5') {
       environment {
-        RUBY_VERSION = '2.5.1'
+        RUBY_VERSION = '2.5.8'
+      }
+      steps {
+        sh './test.sh'
+        junit 'spec/reports/*.xml'
+      }
+    }
+
+    stage('Test 2.6') {
+      environment {
+        RUBY_VERSION = '2.6.6'
+      }
+      steps {
+        sh './test.sh'
+        junit 'spec/reports/*.xml'
+      }
+    }
+
+    stage('Test 2.7') {
+      environment {
+        RUBY_VERSION = '2.7.1'
       }
       steps {
         sh './test.sh'
